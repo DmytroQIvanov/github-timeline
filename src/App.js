@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import ChartBlock from "./components/ChartBlock/ChartBlock";
+import SearchBlock from "./components/SearchBlock/SearchBlock";
+import { useState } from "react";
+import { connect } from "react-redux";
+import ReposBlock from "./components/ReposBlock/ReposBlock";
+import {
+  Switch,
+  Route,
+  BrowserRouter as Router,
+  Redirect,
+} from "react-router-dom";
+import { Loader } from "./components/Loader/Loader";
+import { createBrowserHistory } from "history";
 
-function App() {
+function App(props) {
+  let [obtained, setObtained] = useState(false);
+
+  let history = createBrowserHistory();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router history={history}>
+        <Redirect to="/home" />
+        User: {props.store[0].name}
+        <Switch>
+          <Route path="/home">
+            <SearchBlock setObtained={setObtained} />
+          </Route>
+
+          <Route path="/repositories/">
+            <SearchBlock setObtained={setObtained} />
+            {obtained ? <ReposBlock /> : <Loader />}
+          </Route>
+
+          <Route path="/chart/">
+            <ChartBlock />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
 
-export default App;
+function mapStateToProps(store) {
+  return { store };
+}
+
+export default connect(mapStateToProps)(App);
